@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfConsole", "pdfconsole\Pd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfLibrary", "pdflibrary\PdfLibrary.csproj", "{23D428BE-DA94-48DE-89C5-292CDBB1B7C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonUtilities", "commonutilities\CommonUtilities.csproj", "{222239FC-E333-4E29-B44E-A229CF24E6B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{23D428BE-DA94-48DE-89C5-292CDBB1B7C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23D428BE-DA94-48DE-89C5-292CDBB1B7C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23D428BE-DA94-48DE-89C5-292CDBB1B7C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{222239FC-E333-4E29-B44E-A229CF24E6B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{222239FC-E333-4E29-B44E-A229CF24E6B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{222239FC-E333-4E29-B44E-A229CF24E6B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{222239FC-E333-4E29-B44E-A229CF24E6B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

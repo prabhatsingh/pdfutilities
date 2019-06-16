@@ -1,2 +1,0 @@
-C:\Users\Prabhat Singh\source\repos\PdfUtilities\pdfconsole\obj\Debug\PdfConsole.csprojResolveAssemblyReference.cache
-C:\Users\Prabhat Singh\source\repos\PdfUtilities\pdfconsole\obj\Debug\PdfConsole.csproj.CoreCompileInputs.cache

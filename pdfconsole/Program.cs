@@ -23,7 +23,7 @@ namespace PdfConsole
                 Console.Read();
             }
             else
-            {
+            {                
                 PerformActions(args);
             }
         }
@@ -33,7 +33,7 @@ namespace PdfConsole
             if (args.Length == 1)
             {
                 var file = args.First();
-                if (Path.GetExtension(file) == ".pdf")
+                if (Path.GetExtension(file).ToLowerInvariant() == ".pdf")
                 {
                     var choice = GetUserChoice('s', 'p', args);
 
@@ -41,8 +41,19 @@ namespace PdfConsole
                         PdfLibrary.GhostScriptHelper.PdfToImage(args.First());
                     else if (choice == 2)
                         PdfLibrary.ITextHelper.Split(args.First());
+                    else if(choice == 3)
+                    {
+                        choice = GetUserChoice('s', 'r', args);
+
+                        if (choice == 1)
+                            PdfLibrary.ITextHelper.Rotate(args.First(), 90);
+                        else if (choice == 2)
+                            PdfLibrary.ITextHelper.Rotate(args.First(), 270);
+                        else if (choice == 3)
+                            PdfLibrary.ITextHelper.Rotate(args.First(), 180);
+                    }
                 }
-                else if (new string[] { ".jpeg", ".png", ".jpg", ".bmp", ".tiff" }.Contains(Path.GetExtension(file)))
+                else if (new string[] { ".jpeg", ".png", ".jpg", ".bmp", ".tiff" }.Contains(Path.GetExtension(file).ToLowerInvariant()))
                 {
                     var choice = GetUserChoice('s', 'i', args);
 
@@ -57,9 +68,9 @@ namespace PdfConsole
 
                 foreach (var file in args.ToList())
                 {
-                    if (Path.GetExtension(file) == ".pdf")
+                    if (Path.GetExtension(file).ToLowerInvariant() == ".pdf")
                         pdfs.Add(file);
-                    else if (new string[] { ".jpeg", ".png", ".jpg", ".bmp", ".tiff" }.Contains(Path.GetExtension(file)))
+                    else if (new string[] { ".jpeg", ".png", ".jpg", ".bmp", ".tiff" }.Contains(Path.GetExtension(file).ToLowerInvariant()))
                         imgs.Add(file);
                 }
 
@@ -76,6 +87,17 @@ namespace PdfConsole
                         {
                             if (PdfLibrary.GhostScriptHelper.GetPageCount(f) > 1) PdfLibrary.ITextHelper.Split(f);
                         });
+                    else if(choice == 4)
+                    {
+                        choice = GetUserChoice('m', 'r', args);
+
+                        if (choice == 1)
+                            pdfs.ForEach(f => PdfLibrary.ITextHelper.Rotate(f, 90));
+                        else if (choice == 2)
+                            pdfs.ForEach(f => PdfLibrary.ITextHelper.Rotate(f, 270));
+                        else if (choice == 3)
+                            pdfs.ForEach(f => PdfLibrary.ITextHelper.Rotate(f, 180));
+                    }
                 }
                 else if (imgs.Count > 0)
                 {
@@ -87,20 +109,25 @@ namespace PdfConsole
             }
         }
 
-        private static int GetUserChoice(char ms, char pi, string[] args)
+        private static int GetUserChoice(char ms, char pir, string[] args)
         {
-            Console.WriteLine("What do you want to do?");
+            if (pir == 'r')
+                Console.WriteLine("Select rotation type");
+            else
+                Console.WriteLine("What do you want to do?");
 
-            switch (ms + pi)
+            switch (ms + pir)
             {
                 case 's' + 'p':
                     Console.WriteLine("1. Convert pdf pages to images");
                     Console.WriteLine("2. Split Pdf File");
+                    Console.WriteLine("3. Rotate Pdf file");
                     break;
                 case 'm' + 'p':
                     Console.WriteLine("1. Convert pdf files to images");
                     Console.WriteLine("2. Merge Pdf Files");
                     Console.WriteLine("3. Split Pdf Files with multiple pages");
+                    Console.WriteLine("4. Rotate Pdf files");
                     break;
                 case 's' + 'i':
                     Console.WriteLine("1. Convert image to pdf");
@@ -109,6 +136,12 @@ namespace PdfConsole
                 case 'm' + 'i':
                     Console.WriteLine("1. Combine images in one pdf");
                     Console.WriteLine("2. Compress Images");
+                    break;
+                case 'm' + 'r':
+                case 's' + 'r':
+                    Console.WriteLine("1. Rotate clockwise");
+                    Console.WriteLine("2. Rotate counter clockwise");
+                    Console.WriteLine("2. Rotate 180 degrees");
                     break;
             }
 
