@@ -47,6 +47,8 @@ namespace PdfLibrary
 
                 img.OutputPath = outputfilename;
                 img.Process(_lastInstalledVersion, false, null);
+
+                Console.WriteLine("Generated {0}", outputfilename);
             }
         }
 

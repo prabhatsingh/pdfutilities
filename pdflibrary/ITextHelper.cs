@@ -38,6 +38,7 @@ namespace PdfLibrary
                     pdf.Dispose();
                     doc.Dispose();
                     stream.Dispose();
+                    Console.WriteLine("Generated {0}", outFile);
                 }
             }
         }
@@ -65,6 +66,8 @@ namespace PdfLibrary
                 {
                     pdf.AddDocument(new iTextSharp.text.pdf.PdfReader(file));
                 }
+                
+                Console.WriteLine("Merged {0} into {1}", inputfiles.Count, Path.GetFileNameWithoutExtension(outputpath));
             }
             catch (Exception)
             {
@@ -105,6 +108,8 @@ namespace PdfLibrary
                     img.SetAbsolutePosition(0, 0);
                     writer.DirectContent.AddImage(img);
                 }
+                
+                Console.WriteLine("Merged {0} images into {1}", inputfiles.Count, Path.GetFileNameWithoutExtension(outputpath));
             }
             catch (Exception)
             {
@@ -148,6 +153,8 @@ namespace PdfLibrary
 
                 stamper.Close();
                 reader.Close();
+                
+                Console.WriteLine("Rotated {0} pages of {1}", pageCount, filename);
             }
         }
     }

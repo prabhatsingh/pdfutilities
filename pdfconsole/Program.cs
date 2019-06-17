@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PdfConsole
 {
@@ -23,8 +20,9 @@ namespace PdfConsole
                 Console.Read();
             }
             else
-            {                
+            {
                 PerformActions(args);
+                Console.Read();
             }
         }
 
@@ -33,7 +31,7 @@ namespace PdfConsole
             if (args.Length == 1)
             {
                 var file = args.First();
-                if (Path.GetExtension(file).ToLowerInvariant() == ".pdf")
+                if (CommonUtilities.FileUtilities.IsPdf(Path.GetExtension(file)))
                 {
                     var choice = GetUserChoice('s', 'p', args);
 
@@ -41,7 +39,7 @@ namespace PdfConsole
                         PdfLibrary.GhostScriptHelper.PdfToImage(args.First());
                     else if (choice == 2)
                         PdfLibrary.ITextHelper.Split(args.First());
-                    else if(choice == 3)
+                    else if (choice == 3)
                     {
                         choice = GetUserChoice('s', 'r', args);
 
@@ -53,7 +51,7 @@ namespace PdfConsole
                             PdfLibrary.ITextHelper.Rotate(args.First(), 180);
                     }
                 }
-                else if (new string[] { ".jpeg", ".png", ".jpg", ".bmp", ".tiff" }.Contains(Path.GetExtension(file).ToLowerInvariant()))
+                else if (CommonUtilities.FileUtilities.IsImage(Path.GetExtension(file)))
                 {
                     var choice = GetUserChoice('s', 'i', args);
 
@@ -68,9 +66,9 @@ namespace PdfConsole
 
                 foreach (var file in args.ToList())
                 {
-                    if (Path.GetExtension(file).ToLowerInvariant() == ".pdf")
+                    if (CommonUtilities.FileUtilities.IsPdf(Path.GetExtension(file)))
                         pdfs.Add(file);
-                    else if (new string[] { ".jpeg", ".png", ".jpg", ".bmp", ".tiff" }.Contains(Path.GetExtension(file).ToLowerInvariant()))
+                    else if (CommonUtilities.FileUtilities.IsImage(Path.GetExtension(file)))
                         imgs.Add(file);
                 }
 
@@ -87,7 +85,7 @@ namespace PdfConsole
                         {
                             if (PdfLibrary.GhostScriptHelper.GetPageCount(f) > 1) PdfLibrary.ITextHelper.Split(f);
                         });
-                    else if(choice == 4)
+                    else if (choice == 4)
                     {
                         choice = GetUserChoice('m', 'r', args);
 
