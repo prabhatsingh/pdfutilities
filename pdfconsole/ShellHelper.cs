@@ -5,7 +5,7 @@ using System.IO;
 namespace PdfConsole
 {
     public class ShellHelper
-    {        
+    {
         public static void AddMenuItem()
         {
             string sendto = Environment.GetFolderPath(Environment.SpecialFolder.SendTo);
@@ -21,8 +21,6 @@ namespace PdfConsole
             shortcut.Description = "Shortcut for PDF Utilities";
             shortcut.TargetPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             shortcut.Save();
-
-            Console.Write("Link Updated...");
         }
     }
 }

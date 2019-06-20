@@ -55,6 +55,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\commonutilities\CommonUtilities.csproj">
+      <Project>{222239FC-E333-4E29-B44E-A229CF24E6B9}</Project>
+      <Name>CommonUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PdfLibrary\PdfLibrary.csproj">
       <Project>{23d428be-da94-48de-89c5-292cdbb1b7c8}</Project>
       <Name>PdfLibrary</Name>

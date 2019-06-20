@@ -76,7 +76,7 @@ namespace PdfLibrary
                 stream?.Dispose();
             }
         }
-        
+
         public static void ImageToPdf(List<string> inputfiles)
         {
             var currentdirectory = Path.GetDirectoryName(inputfiles.First());
@@ -96,13 +96,14 @@ namespace PdfLibrary
 
                 doc.Open();
 
+                inputfiles.Sort();
                 foreach (var imgf in inputfiles)
                 {
                     Image img = iTextSharp.text.Image.GetInstance(imgf);
-                    doc.SetPageSize(new iTextSharp.text.Rectangle(0, 0, img.Width, img.Height, 0));
-                    doc.NewPage();
+                    img.ScaleToFit(PageSize.A4.Width, PageSize.A4.Height);
+                    img.SetAbsolutePosition((PageSize.A4.Width - img.ScaledWidth) / 2, (PageSize.A4.Height - img.ScaledHeight) / 2);
 
-                    img.SetAbsolutePosition(0, 0);
+                    doc.NewPage();
                     writer.DirectContent.AddImage(img);
                 }
             }
