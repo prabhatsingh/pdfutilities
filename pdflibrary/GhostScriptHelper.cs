@@ -29,7 +29,8 @@ namespace PdfLibrary
             {
                 GraphicsAlphaBits = GhostscriptImageDeviceAlphaBits.V_4,
                 TextAlphaBits = GhostscriptImageDeviceAlphaBits.V_4,
-                ResolutionXY = new GhostscriptImageDeviceResolution(600, 600),
+                //ResolutionXY = new GhostscriptImageDeviceResolution(600, 600),
+                Resolution = 600,
                 PostScript = string.Empty
             };
 

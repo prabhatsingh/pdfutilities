@@ -102,6 +102,7 @@ namespace PdfLibrary
                 foreach (var imgf in inputfiles)
                 {
                     Image img = iTextSharp.text.Image.GetInstance(imgf);
+                    
                     doc.SetPageSize(new iTextSharp.text.Rectangle(0, 0, img.Width, img.Height, 0));
                     doc.NewPage();
 
