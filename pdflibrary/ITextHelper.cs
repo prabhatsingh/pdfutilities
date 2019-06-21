@@ -23,6 +23,12 @@ namespace PdfLibrary
 
                 int digitN = NumPages.ToString().Length;
 
+                if (GetPageCount(inputfile) == 1)
+                {
+                    Console.WriteLine("File has only one page, splitting abandoned!");
+                    return;
+                }
+
                 for (int i = 1; i <= NumPages; i++)
                 {
                     string outFile = string.Format("{0}{1}_Page {2:D" + digitN + "}.pdf", outputpath, filename, i);
@@ -149,6 +155,14 @@ namespace PdfLibrary
 
                 stamper.Close();
                 reader.Close();
+            }
+        }
+
+        public static int GetPageCount(string inputfile)
+        {
+            using(PdfReader reader = new PdfReader(inputfile))
+            {
+                return reader.NumberOfPages;
             }
         }
     }
