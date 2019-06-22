@@ -19,17 +19,17 @@ namespace PdfLibrary
 
             using (PdfReader reader = new PdfReader(inputfile))
             {
-                int NumPages = reader.NumberOfPages;
+                int pagecount = reader.NumberOfPages;
 
-                int digitN = NumPages.ToString().Length;
+                int digitN = pagecount.ToString().Length;
 
-                if (GetPageCount(inputfile) == 1)
+                if (pagecount == 1)
                 {
                     Console.WriteLine("File has only one page, splitting abandoned!");
                     return;
                 }
 
-                for (int i = 1; i <= NumPages; i++)
+                for (int i = 1; i <= pagecount; i++)
                 {
                     string outFile = string.Format("{0}{1}_Page {2:D" + digitN + "}.pdf", outputpath, filename, i);
                     FileStream stream = new FileStream(outFile, FileMode.Create);
@@ -70,7 +70,7 @@ namespace PdfLibrary
 
                 foreach (string file in inputfiles)
                 {
-                    pdf.AddDocument(new iTextSharp.text.pdf.PdfReader(file));
+                    pdf.AddDocument(new PdfReader(file));
                 }
                 
                 Console.WriteLine("Merged {0} into {1}", inputfiles.Count, Path.GetFileNameWithoutExtension(outputpath));
