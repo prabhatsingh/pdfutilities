@@ -23,6 +23,12 @@ namespace PdfLibrary
 
                 int digitN = NumPages.ToString().Length;
 
+                if (GetPageCount(inputfile) == 1)
+                {
+                    Console.WriteLine("File has only one page, splitting abandoned!");
+                    return;
+                }
+
                 for (int i = 1; i <= NumPages; i++)
                 {
                     string outFile = string.Format("{0}{1}_Page {2:D" + digitN + "}.pdf", outputpath, filename, i);
@@ -79,7 +85,7 @@ namespace PdfLibrary
                 stream?.Dispose();
             }
         }
-        
+
         public static void ImageToPdf(List<string> inputfiles)
         {
             var currentdirectory = Path.GetDirectoryName(inputfiles.First());
@@ -99,14 +105,14 @@ namespace PdfLibrary
 
                 doc.Open();
 
+                inputfiles.Sort();
                 foreach (var imgf in inputfiles)
                 {
                     Image img = iTextSharp.text.Image.GetInstance(imgf);
-                    
-                    doc.SetPageSize(new iTextSharp.text.Rectangle(0, 0, img.Width, img.Height, 0));
-                    doc.NewPage();
+                    img.ScaleToFit(PageSize.A4.Width, PageSize.A4.Height);
+                    img.SetAbsolutePosition((PageSize.A4.Width - img.ScaledWidth) / 2, (PageSize.A4.Height - img.ScaledHeight) / 2);
 
-                    img.SetAbsolutePosition(0, 0);
+                    doc.NewPage();
                     writer.DirectContent.AddImage(img);
                 }
                 
@@ -156,6 +162,14 @@ namespace PdfLibrary
                 reader.Close();
                 
                 Console.WriteLine("Rotated {0} pages of {1}", pageCount, filename);
+            }
+        }
+
+        public static int GetPageCount(string inputfile)
+        {
+            using(PdfReader reader = new PdfReader(inputfile))
+            {
+                return reader.NumberOfPages;
             }
         }
     }

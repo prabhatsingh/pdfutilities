@@ -21,8 +21,6 @@ namespace PdfConsole
             shortcut.Description = "Shortcut for PDF Utilities";
             shortcut.TargetPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             shortcut.Save();
-
-            Console.Write("Link Updated...");
         }
     }
 }

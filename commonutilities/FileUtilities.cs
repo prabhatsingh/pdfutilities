@@ -2,16 +2,16 @@
 
 namespace CommonUtilities
 {
-    public class FileUtilities
+    public static class FileUtilities
     {
-        public static bool IsImage(string extension)
+        public static bool IsImage(this string extension)
         {
-            return new string[] { "BMP", "JPEG", "JPG", "PNG", "TIFF" }.Contains(extension.Trim(new char[] { ' ', '.' }).ToUpper());
+            return new string[] { "jpeg", "png", "jpg", "bmp", "tiff" }.Contains(extension.Trim(new char[] { '.', ' ' }).ToLowerInvariant());
         }
 
-        public static bool IsPdf(string extension)
+        public static bool IsPdf(this string extension)
         {
-            return new string[] { "PDF" }.Contains(extension.Trim(new char[] { ' ', '.' }).ToUpper());
+            return new string[] { "pdf" }.Contains(extension.Trim(new char[] { '.', ' ' }).ToLowerInvariant());
         }
     }
 }

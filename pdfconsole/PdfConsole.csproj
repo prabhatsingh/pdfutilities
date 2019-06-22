@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>PdfConsole</RootNamespace>
     <AssemblyName>PdfConsole</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\commonutilities\CommonUtilities.csproj">
-      <Project>{222239fc-e333-4e29-b44e-a229cf24e6b9}</Project>
+      <Project>{222239FC-E333-4E29-B44E-A229CF24E6B9}</Project>
       <Name>CommonUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\PdfLibrary\PdfLibrary.csproj">

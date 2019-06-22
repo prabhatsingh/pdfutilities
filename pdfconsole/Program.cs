@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonUtilities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Reflection;
 namespace PdfConsole
 {
     class Program
-    {
+    {        
         static void Main(string[] args)
         {
             Console.Title = "Pdf Utilities by Prabhat Singh";
@@ -15,15 +16,18 @@ namespace PdfConsole
             ShellHelper.AddMenuItem();
 
             if (args.Length == 0)
-            {
                 ShowWelcomeMessage();
-                Console.Read();
-            }
             else
-            {
                 PerformActions(args);
-                Console.Read();
-            }
+
+            ConsoleUtilities.PrintLine("Job completed successfully!", ConsoleColor.Green);
+            System.Threading.Timer closetimer = new System.Threading.Timer(Closeapp, null, 2000, 5000);
+            Console.ReadKey();
+        }
+
+        private static void Closeapp(object state)
+        {
+            Environment.Exit(0);
         }
 
         private static void PerformActions(string[] args)
@@ -31,27 +35,27 @@ namespace PdfConsole
             if (args.Length == 1)
             {
                 var file = args.First();
-                if (CommonUtilities.FileUtilities.IsPdf(Path.GetExtension(file)))
+                if (Path.GetExtension(file).IsPdf())
                 {
                     var choice = GetUserChoice('s', 'p', args);
 
                     if (choice == 1)
-                        PdfLibrary.GhostScriptHelper.PdfToImage(args.First());
+                        PdfLibrary.GhostScriptHelper.PdfToImage(file);
                     else if (choice == 2)
-                        PdfLibrary.ITextHelper.Split(args.First());
+                        PdfLibrary.ITextHelper.Split(file);
                     else if (choice == 3)
                     {
                         choice = GetUserChoice('s', 'r', args);
 
                         if (choice == 1)
-                            PdfLibrary.ITextHelper.Rotate(args.First(), 90);
+                            PdfLibrary.ITextHelper.Rotate(file, 90);
                         else if (choice == 2)
-                            PdfLibrary.ITextHelper.Rotate(args.First(), 270);
+                            PdfLibrary.ITextHelper.Rotate(file, 270);
                         else if (choice == 3)
-                            PdfLibrary.ITextHelper.Rotate(args.First(), 180);
+                            PdfLibrary.ITextHelper.Rotate(file, 180);
                     }
                 }
-                else if (CommonUtilities.FileUtilities.IsImage(Path.GetExtension(file)))
+                else if (Path.GetExtension(file).IsImage())
                 {
                     var choice = GetUserChoice('s', 'i', args);
 
@@ -66,9 +70,9 @@ namespace PdfConsole
 
                 foreach (var file in args.ToList())
                 {
-                    if (CommonUtilities.FileUtilities.IsPdf(Path.GetExtension(file)))
+                    if (Path.GetExtension(file).IsPdf())
                         pdfs.Add(file);
-                    else if (CommonUtilities.FileUtilities.IsImage(Path.GetExtension(file)))
+                    else if (Path.GetExtension(file).IsImage())
                         imgs.Add(file);
                 }
 
@@ -107,43 +111,61 @@ namespace PdfConsole
             }
         }
 
-        private static int GetUserChoice(char ms, char pir, string[] args)
+        private static int GetUserChoice(char ms, char irp, string[] args)
         {
-            if (pir == 'r')
+            if (irp == 'r')
                 Console.WriteLine("Select rotation type");
             else
                 Console.WriteLine("What do you want to do?");
 
-            switch (ms + pir)
+            string[] options;
+
+            switch (ms + irp)
             {
                 case 's' + 'p':
-                    Console.WriteLine("1. Convert pdf pages to images");
-                    Console.WriteLine("2. Split Pdf File");
-                    Console.WriteLine("3. Rotate Pdf file");
+                    options = new string[] {
+                        "Convert pdf pages to images",
+                        "Split Pdf File",
+                        "Rotate Pdf file"
+                    };
                     break;
                 case 'm' + 'p':
-                    Console.WriteLine("1. Convert pdf files to images");
-                    Console.WriteLine("2. Merge Pdf Files");
-                    Console.WriteLine("3. Split Pdf Files with multiple pages");
-                    Console.WriteLine("4. Rotate Pdf files");
+                    options = new string[] {
+                        "Convert pdf files to images",
+                        "Merge Pdf Files",
+                        "Split Pdf Files with multiple pages",
+                        "Rotate Pdf files"
+                    };
                     break;
                 case 's' + 'i':
-                    Console.WriteLine("1. Convert image to pdf");
-                    Console.WriteLine("2. Compress Image");
+                    options = new string[] {
+                        "Convert image to pdf",
+                        "Compress Image"
+                    };
                     break;
                 case 'm' + 'i':
-                    Console.WriteLine("1. Combine images in one pdf");
-                    Console.WriteLine("2. Compress Images");
+                    options = new string[] {
+                        "Combine images in one pdf",
+                        "Compress Images"
+                    };
                     break;
                 case 'm' + 'r':
                 case 's' + 'r':
-                    Console.WriteLine("1. Rotate clockwise");
-                    Console.WriteLine("2. Rotate counter clockwise");
-                    Console.WriteLine("2. Rotate 180 degrees");
+                    options = new string[] {
+                        "Rotate clockwise",
+                        "Rotate counter clockwise",
+                        "Rotate 180 degrees"
+                    };
+                    break;
+                default:
+                    options = new string[0];
                     break;
             }
 
-            return Convert.ToInt32(Console.ReadLine());
+            ConsoleUtilities.PrintOptions(options, ConsoleColor.DarkYellow);            
+            var selectedOption = Convert.ToInt32(Console.ReadLine());
+            ConsoleUtilities.PrintLine("Processing", ConsoleColor.DarkGray);
+            return selectedOption;
         }
 
         private static void ShowWelcomeMessage()
@@ -153,7 +175,7 @@ namespace PdfConsole
 
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"{AssemblyTitle} {AssemblyVersion}\nCopyright(C) 2019 Prabhat Singh\n");
+            Console.WriteLine($"{AssemblyTitle} {AssemblyVersion}\nCopyright(C) {DateTime.Now.Year} Prabhat Singh\n");
             Console.ResetColor();
             Console.WriteLine("Select pdf or image files in explorer and click on the Pdf Utilities link in context menu's send to!!");
         }
