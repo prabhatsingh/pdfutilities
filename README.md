@@ -7,9 +7,8 @@ A simple project created to make my life a little bit easier while working with 
 > **ImageProcessor**  [Link](https://imageprocessor.org/)
 
 ### Features (Feel free to modify/extend/expand features)
-- Convert pdf pages into images
+- Convert pdf into images
 - Split pdf file
-- Convert pdf files to images
 - Merge pdf files
 - Convert image to pdf
 - Combine images into one pdf

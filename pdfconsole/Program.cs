@@ -1,4 +1,5 @@
 ﻿using CommonUtilities;
+using CommonUtilities.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,11 +19,28 @@ namespace PdfConsole
             if (args.Length == 0)
                 ShowWelcomeMessage();
             else
+            {
+                ActionUtilities.ActionInfo actinf = PrepareAction(args);
                 PerformActions(args);
 
-            ConsoleUtilities.PrintLine("Job completed successfully!", ConsoleColor.Green);
-            System.Threading.Timer closetimer = new System.Threading.Timer(Closeapp, null, 2000, 5000);
+                ConsoleUtilities.PrintLine("Job completed successfully!", ConsoleColor.Green);
+                System.Threading.Timer closetimer = new System.Threading.Timer(Closeapp, null, 2000, 5000);
+            }
+
             Console.ReadKey();
+        }
+
+        private static ActionUtilities.ActionInfo PrepareAction(string[] args)
+        {
+            var actionInfo = new ActionUtilities.ActionInfo();
+            args.ToList().ForEach(f => actionInfo.actionTarget.Add(new FileUtilities.FileDetails(f)));
+
+            //DETERMINE FILETYPE
+            var fileType = actionInfo.actionTargetType;
+            //ASK USER FOR ACTIONS
+            //DETERMINE ACTION SELECTED
+            //PERFORM ACTION
+            return null;
         }
 
         private static void Closeapp(object state)
