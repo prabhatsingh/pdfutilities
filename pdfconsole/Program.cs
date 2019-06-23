@@ -8,7 +8,7 @@ using System.Reflection;
 namespace PdfConsole
 {
     class Program
-    {        
+    {
         static void Main(string[] args)
         {
             Console.Title = "Pdf Utilities by Prabhat Singh";
@@ -37,7 +37,7 @@ namespace PdfConsole
                 var file = args.First();
                 if (Path.GetExtension(file).IsPdf())
                 {
-                    var choice = GetUserChoice('s', 'p', args);
+                    var choice = GetUserChoice("s", "p", args);
 
                     if (choice == 1)
                         PdfLibrary.GhostScriptHelper.PdfToImage(file);
@@ -45,7 +45,7 @@ namespace PdfConsole
                         PdfLibrary.ITextHelper.Split(file);
                     else if (choice == 3)
                     {
-                        choice = GetUserChoice('s', 'r', args);
+                        choice = GetUserChoice("s", "r", args);
 
                         if (choice == 1)
                             PdfLibrary.ITextHelper.Rotate(file, 90);
@@ -57,10 +57,30 @@ namespace PdfConsole
                 }
                 else if (Path.GetExtension(file).IsImage())
                 {
-                    var choice = GetUserChoice('s', 'i', args);
+                    var choice = GetUserChoice("s", "i", args);
 
                     if (choice == 1)
                         PdfLibrary.ITextHelper.ImageToPdf(args.ToList());
+                    else if (choice == 2)
+                    {
+                        choice = GetUserChoice("s", "o", args);
+
+                        if (choice != 0)
+                            ImageLibrary.ImageProcessorHelper.Optimize(file, choice);
+                        else
+                            ImageLibrary.ImageProcessorHelper.Optimize(file);
+                    }
+                    else if (choice == 3)
+                    {
+                        choice = GetUserChoice("s", "r", args);
+
+                        if (choice == 1)
+                            ImageLibrary.ImageProcessorHelper.Rotate(file, 90);
+                        else if (choice == 2)
+                            ImageLibrary.ImageProcessorHelper.Rotate(file, 270);
+                        else if (choice == 3)
+                            ImageLibrary.ImageProcessorHelper.Rotate(file, 180);
+                    }
                 }
             }
             else
@@ -78,7 +98,7 @@ namespace PdfConsole
 
                 if (pdfs.Count > 0)
                 {
-                    var choice = GetUserChoice('m', 'p', args);
+                    var choice = GetUserChoice("m", "p", args);
 
                     if (choice == 1)
                         pdfs.ForEach(f => PdfLibrary.GhostScriptHelper.PdfToImage(f));
@@ -91,7 +111,7 @@ namespace PdfConsole
                         });
                     else if (choice == 4)
                     {
-                        choice = GetUserChoice('m', 'r', args);
+                        choice = GetUserChoice("m", "r", args);
 
                         if (choice == 1)
                             pdfs.ForEach(f => PdfLibrary.ITextHelper.Rotate(f, 90));
@@ -103,18 +123,40 @@ namespace PdfConsole
                 }
                 else if (imgs.Count > 0)
                 {
-                    var choice = GetUserChoice('m', 'i', args);
+                    var choice = GetUserChoice("m", "i", args);
 
                     if (choice == 1)
                         PdfLibrary.ITextHelper.ImageToPdf(imgs);
+                    else if (choice == 2)
+                    {
+                        choice = GetUserChoice("m", "o", args);
+
+                        if (choice != 0)
+                            imgs.ForEach(f => ImageLibrary.ImageProcessorHelper.Optimize(f, choice));
+                        else
+                            imgs.ForEach(f => ImageLibrary.ImageProcessorHelper.Optimize(f));
+                    }
+                    else if (choice == 3)
+                    {
+                        choice = GetUserChoice("m", "r", args);
+
+                        if (choice == 1)
+                            imgs.ForEach(f => ImageLibrary.ImageProcessorHelper.Rotate(f, 90));
+                        else if (choice == 2)
+                            imgs.ForEach(f => ImageLibrary.ImageProcessorHelper.Rotate(f, 270));
+                        else if (choice == 3)
+                            imgs.ForEach(f => ImageLibrary.ImageProcessorHelper.Rotate(f, 180));
+                    }
                 }
             }
         }
 
-        private static int GetUserChoice(char ms, char irp, string[] args)
+        private static int GetUserChoice(string ms, string irp, string[] args)
         {
-            if (irp == 'r')
+            if (irp == "r")
                 Console.WriteLine("Select rotation type");
+            else if (irp == "o")
+                Console.Write("Provide the required resolution: ");
             else
                 Console.WriteLine("What do you want to do?");
 
@@ -122,14 +164,14 @@ namespace PdfConsole
 
             switch (ms + irp)
             {
-                case 's' + 'p':
+                case "s" + "p":
                     options = new string[] {
                         "Convert pdf pages to images",
                         "Split Pdf File",
                         "Rotate Pdf file"
                     };
                     break;
-                case 'm' + 'p':
+                case "m" + "p":
                     options = new string[] {
                         "Convert pdf files to images",
                         "Merge Pdf Files",
@@ -137,20 +179,22 @@ namespace PdfConsole
                         "Rotate Pdf files"
                     };
                     break;
-                case 's' + 'i':
+                case "s" + "i":
                     options = new string[] {
                         "Convert image to pdf",
-                        "Compress Image"
+                        "Compress Image",
+                        "Rotate Image"
                     };
                     break;
-                case 'm' + 'i':
+                case "m" + "i":
                     options = new string[] {
                         "Combine images in one pdf",
-                        "Compress Images"
+                        "Compress Images",
+                        "Rotate Images"
                     };
                     break;
-                case 'm' + 'r':
-                case 's' + 'r':
+                case "m" + "r":
+                case "s" + "r":
                     options = new string[] {
                         "Rotate clockwise",
                         "Rotate counter clockwise",
@@ -162,8 +206,12 @@ namespace PdfConsole
                     break;
             }
 
-            ConsoleUtilities.PrintOptions(options, ConsoleColor.DarkYellow);            
-            var selectedOption = Convert.ToInt32(Console.ReadLine());
+            if (options.Length != 0)
+                ConsoleUtilities.PrintOptions(options, ConsoleColor.DarkYellow);
+
+            var userinput = Console.ReadLine();
+
+            var selectedOption = Convert.ToInt32(string.IsNullOrEmpty(userinput) ? "0" : userinput);
             ConsoleUtilities.PrintLine("Processing", ConsoleColor.DarkGray);
             return selectedOption;
         }

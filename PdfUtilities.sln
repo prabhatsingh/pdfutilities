@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfLibrary", "pdflibrary\Pd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonUtilities", "commonutilities\CommonUtilities.csproj", "{222239FC-E333-4E29-B44E-A229CF24E6B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageLibrary", "ImageLibrary\ImageLibrary.csproj", "{55C0DCC6-9BE4-47C7-8C35-79EB53BA0607}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{222239FC-E333-4E29-B44E-A229CF24E6B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{222239FC-E333-4E29-B44E-A229CF24E6B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{222239FC-E333-4E29-B44E-A229CF24E6B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55C0DCC6-9BE4-47C7-8C35-79EB53BA0607}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55C0DCC6-9BE4-47C7-8C35-79EB53BA0607}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55C0DCC6-9BE4-47C7-8C35-79EB53BA0607}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55C0DCC6-9BE4-47C7-8C35-79EB53BA0607}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
