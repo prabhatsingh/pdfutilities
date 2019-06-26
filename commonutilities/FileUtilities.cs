@@ -33,6 +33,14 @@ namespace CommonUtilities
                 }
             }
 
+            public string Filepath
+            {
+                get
+                {
+                    return _filepath;
+                }
+            }
+
             public string Extension
             {
                 get
