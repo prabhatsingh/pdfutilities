@@ -44,7 +44,7 @@ namespace PdfLibrary
                     pdf.Dispose();
                     doc.Dispose();
                     stream.Dispose();
-                    Console.WriteLine("Generated {0}", outFile);
+                    Console.WriteLine("Generated {0}", Path.GetFileName(outFile));
                 }
             }
         }
@@ -58,13 +58,13 @@ namespace PdfLibrary
 
             FileStream stream = null;
             Document doc = null;
-            PdfCopy pdf = null;
+            PdfSmartCopy pdf = null;
 
             try
             {
                 stream = new FileStream(outputpath, FileMode.Create);
                 doc = new Document();
-                pdf = new PdfCopy(doc, stream);
+                pdf = new PdfSmartCopy(doc, stream);
 
                 doc.Open();
 
@@ -72,8 +72,8 @@ namespace PdfLibrary
                 {
                     pdf.AddDocument(new PdfReader(file));
                 }
-                
-                Console.WriteLine("Merged {0} into {1}", inputfiles.Count, Path.GetFileNameWithoutExtension(outputpath));
+
+                Console.WriteLine("Merged {0} into {1}", inputfiles.Count, Path.GetFileName(outputpath));
             }
             catch (Exception)
             {
@@ -86,8 +86,10 @@ namespace PdfLibrary
             }
         }
 
-        public static void ImageToPdf(List<string> inputfiles)
+        public static void Combine(List<string> inputfiles)
         {
+            Console.WriteLine("In Progress, won't work properly");
+
             var currentdirectory = Path.GetDirectoryName(inputfiles.First());
             var filename = Path.GetFileNameWithoutExtension(inputfiles.First());
 
@@ -106,6 +108,62 @@ namespace PdfLibrary
                 doc.Open();
 
                 inputfiles.Sort();
+                foreach (var file in inputfiles)
+                {
+                    if (Path.GetExtension(file) == ".pdf")
+                    {
+                        doc.NewPage();
+                        PdfReader reader = new PdfReader(file);
+                        PdfImportedPage page = writer.GetImportedPage(reader, 1);
+
+                        //cb.AddTemplate(page, 0, -1f, 1f, 0, 0, reader.GetPageSizeWithRotation(1).Height);
+                        //writer.DirectContent.AddTemplate(page, 0, -1f, 1f, 0, 0, reader.GetPageSi);
+                    }
+                    else
+                    {
+                        Image img = iTextSharp.text.Image.GetInstance(file);
+                        img.ScaleToFit(PageSize.A4.Width, PageSize.A4.Height);
+                        img.SetAbsolutePosition((PageSize.A4.Width - img.ScaledWidth) / 2, (PageSize.A4.Height - img.ScaledHeight) / 2);
+
+                        doc.NewPage();
+                        writer.DirectContent.AddImage(img);
+                    }
+                }
+
+                Console.WriteLine("Merged {0} images into {1}", inputfiles.Count, Path.GetFileName(outputpath));
+            }
+            catch (Exception)
+            {
+
+            }
+            finally
+            {
+                doc?.Dispose();
+                fs?.Dispose();
+                writer?.Dispose();
+            }
+        }
+
+        public static void ImageToPdf(List<string> inputfiles)
+        {
+            var currentdirectory = Path.GetDirectoryName(inputfiles.First());
+            var filename = Path.GetFileNameWithoutExtension(inputfiles.First());
+
+            var outputpath = currentdirectory + Path.DirectorySeparatorChar + filename + "_Merged.pdf";
+
+            Document doc = null;
+            FileStream fs = null;
+            PdfWriter writer = null;
+            
+            try
+            {
+                doc = new Document();
+                fs = new FileStream(outputpath, FileMode.Create, FileAccess.Write, FileShare.None);
+                writer = PdfWriter.GetInstance(doc, fs);
+
+                doc.Open();
+
+                inputfiles.Sort();
                 foreach (var imgf in inputfiles)
                 {
                     Image img = iTextSharp.text.Image.GetInstance(imgf);
@@ -115,8 +173,8 @@ namespace PdfLibrary
                     doc.NewPage();
                     writer.DirectContent.AddImage(img);
                 }
-                
-                Console.WriteLine("Merged {0} images into {1}", inputfiles.Count, Path.GetFileNameWithoutExtension(outputpath));
+
+                Console.WriteLine("Merged {0} images into {1}", inputfiles.Count, Path.GetFileName(outputpath));
             }
             catch (Exception)
             {
@@ -160,17 +218,23 @@ namespace PdfLibrary
 
                 stamper.Close();
                 reader.Close();
-                
-                Console.WriteLine("Rotated {0} pages of {1}", pageCount, filename);
+
+                Console.WriteLine("Rotated {0} pages of {1}", pageCount, Path.GetFileName(filename));
             }
         }
 
         public static int GetPageCount(string inputfile)
         {
-            using(PdfReader reader = new PdfReader(inputfile))
+            using (PdfReader reader = new PdfReader(inputfile))
             {
                 return reader.NumberOfPages;
             }
+        }
+
+        public static bool IsXFA(string inputfile)
+        {
+            XfaForm xfa = new XfaForm(new PdfReader(inputfile));
+            return xfa.XfaPresent;
         }
     }
 }

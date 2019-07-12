@@ -16,36 +16,33 @@ namespace CommonUtilities
             return new string[] { "pdf" }.Contains(extension.Trim(new char[] { '.', ' ' }).ToLowerInvariant());
         }
 
+        public static bool IsXps(this string extension)
+        {
+            return new string[] { "xps", "oxps" }.Contains(extension.Trim(new char[] { '.', ' ' }).ToLowerInvariant());
+        }
+
         public class FileDetails
         {
-            private string _filepath;
-
             public FileDetails(string f)
             {
-                _filepath = f;
+                Filepath = f;
             }
 
             public string Filename
             {
                 get
                 {
-                    return Path.GetFileNameWithoutExtension(_filepath);
+                    return Path.GetFileNameWithoutExtension(Filepath);
                 }
             }
 
-            public string Filepath
-            {
-                get
-                {
-                    return _filepath;
-                }
-            }
+            public string Filepath { get; set; }
 
             public string Extension
             {
                 get
                 {
-                    return Path.GetExtension(_filepath);
+                    return Path.GetExtension(Filepath);
                 }
             }
 
@@ -55,7 +52,8 @@ namespace CommonUtilities
                 {
                     if (Extension.IsImage()) return FileType.IMAGE;
                     if (Extension.IsPdf()) return FileType.PDF;
-                    return FileType.UNKNOWN;
+                    if (Extension.IsXps()) return FileType.XPS;
+                    return FileType.UNSUPPORTED;
                 }
             }
         }

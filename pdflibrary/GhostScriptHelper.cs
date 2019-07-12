@@ -1,7 +1,10 @@
 ﻿using Ghostscript.NET;
+using Ghostscript.NET.Processor;
 using Ghostscript.NET.Rasterizer;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace PdfLibrary
@@ -29,7 +32,6 @@ namespace PdfLibrary
             {
                 GraphicsAlphaBits = GhostscriptImageDeviceAlphaBits.V_4,
                 TextAlphaBits = GhostscriptImageDeviceAlphaBits.V_4,
-                //ResolutionXY = new GhostscriptImageDeviceResolution(600, 600),
                 Resolution = 600,
                 PostScript = string.Empty
             };
@@ -49,7 +51,33 @@ namespace PdfLibrary
                 img.OutputPath = outputfilename;
                 img.Process(_lastInstalledVersion, false, null);
 
-                Console.WriteLine("Generated {0}", outputfilename);
+                Console.WriteLine("Generated {0}", Path.GetFileName(outputfilename));
+            }
+        }
+        
+        public static void PrintPdf(string inputfile)
+        {
+            GhostscriptVersionInfo _lastInstalledVersion = GetGhostscriptVersion();
+
+            string printerName = System.Drawing.Printing.PrinterSettings.InstalledPrinters.Cast<string>().ToList().Find(f => f.Contains("XPS"));
+            
+            using (GhostscriptProcessor processor = new GhostscriptProcessor(_lastInstalledVersion))
+            {
+                List<string> switches = new List<string>
+                {
+                    "-empty",
+                    "-dPrinted",
+                    "-dBATCH",
+                    "-dNOPAUSE",
+                    "-dNOSAFER",
+                    "-dNumCopies=1",
+                    "-sDEVICE=mswinpr2",
+                    "-sOutputFile=%printer%" + printerName,
+                    "-f",
+                    inputfile
+                };
+
+                processor.StartProcessing(switches.ToArray(), null);
             }
         }
 

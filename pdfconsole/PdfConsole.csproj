@@ -13,6 +13,8 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -39,6 +41,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -66,6 +69,10 @@
     <ProjectReference Include="..\PdfLibrary\PdfLibrary.csproj">
       <Project>{23d428be-da94-48de-89c5-292cdbb1b7c8}</Project>
       <Name>PdfLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xpslibrary\XpsLibrary.csproj">
+      <Project>{c956f1d0-0a7c-46c3-b862-dcba7f66d2b1}</Project>
+      <Name>XpsLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

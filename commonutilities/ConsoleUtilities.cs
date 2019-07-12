@@ -8,10 +8,17 @@ namespace CommonUtilities
 {
     public static class ConsoleUtilities
     {
-        public static void PrintLine(string msg, ConsoleColor color)
+        public static void PrintLine(string msg, ConsoleColor color, params string[] p)
         {
             Console.ForegroundColor = color;
-            Console.WriteLine(msg);
+            Console.WriteLine(msg, p);
+            Console.ResetColor();
+        }
+
+        public static void Print(string msg, ConsoleColor color, params string[] p)
+        {
+            Console.ForegroundColor = color;
+            Console.Write(msg, p);
             Console.ResetColor();
         }
 
