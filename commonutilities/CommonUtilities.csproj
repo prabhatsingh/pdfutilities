@@ -44,7 +44,11 @@
     <Compile Include="ActionUtilities.cs" />
     <Compile Include="ConsoleUtilities.cs" />
     <Compile Include="FileUtilities.cs" />
+    <Compile Include="Interfaces\IImageActions.cs" />
     <Compile Include="Models\Enums.cs" />
+    <Compile Include="Interfaces\IPdfActions.cs" />
+    <Compile Include="Models\ImageActions.cs" />
+    <Compile Include="Models\PdfActions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,8 +1,9 @@
-﻿using CommonUtilities.Models;
+﻿using Libraries.CommonUtilities.Models;
+using System;
 using System.IO;
 using System.Linq;
 
-namespace CommonUtilities
+namespace Libraries.CommonUtilities
 {
     public static class FileUtilities
     {
@@ -56,6 +57,29 @@ namespace CommonUtilities
                     return FileType.UNSUPPORTED;
                 }
             }
+        }
+
+        public static string GetOutputPath(this string inputfile, ActionType acttype, bool isTemp = false, bool formatChange = false, string newExtension = "", string additionalData = "", string outputNameFormat = "", bool hasMultipleOutput = false)
+        {
+            var currentdirectory = isTemp ? Path.GetTempPath() : Path.GetDirectoryName(inputfile);
+            var filename = string.IsNullOrEmpty(outputNameFormat) ? Path.GetFileNameWithoutExtension(inputfile) : outputNameFormat;
+
+            var action = Enum.GetName(acttype.GetType(), acttype).ToLower();
+            var extension = Path.GetExtension(inputfile);
+
+            if (formatChange)
+                extension = newExtension;
+
+            if (hasMultipleOutput)
+            {
+                var outdir = $"{currentdirectory}{Path.DirectorySeparatorChar}{Path.GetFileNameWithoutExtension(inputfile)}{Path.DirectorySeparatorChar}{filename}_{action}_{additionalData}{extension}";
+                if (!Directory.Exists(Path.GetDirectoryName(outdir)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(outdir));
+
+                return outdir;
+            }
+            else
+                return $"{currentdirectory}{Path.DirectorySeparatorChar}{filename}_{action}_{additionalData}{extension}";
         }
     }
 }

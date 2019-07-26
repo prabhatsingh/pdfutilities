@@ -1,8 +1,12 @@
-﻿using CommonUtilities;
-using CommonUtilities.Models;
+﻿using ImageLibrary;
+using Libraries.CommonUtilities;
+using Libraries.CommonUtilities.Models;
+using PdfLibrary;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using XpsLibrary;
 
 namespace PdfConsole
 {
@@ -11,6 +15,7 @@ namespace PdfConsole
         static void Main(string[] args)
         {
             //PrintTest(args);
+            //PdfLibrary.MagickHelper.ConvertToScanned(args.First());
 
             Console.Title = "Pdf Utilities by Prabhat Singh";
 
@@ -21,85 +26,96 @@ namespace PdfConsole
             else
             {
                 ActionUtilities.ActionInfo actinf = PrepareAction(args);
-                PerformAction(actinf);
+
+                var result = StartTaskAsync(actinf).GetAwaiter().GetResult();
 
                 ConsoleUtilities.PrintLine("Job completed successfully!", ConsoleColor.Green);
-                System.Threading.Timer closetimer = new System.Threading.Timer(Closeapp, null, 2000, 5000);
             }
 
             Console.ReadKey();
         }
 
-        //private static void PrintTest(string[] args) => PdfLibrary.PdfiumHelper.PrintPdfToXps(args.ToList().First());
-
-        private static void PerformAction(ActionUtilities.ActionInfo actinf)
+        private static async Task<string> StartTaskAsync(ActionUtilities.ActionInfo actinf)
         {
-            if (actinf.ActionTargetType == FileType.PDF)
+            ConsoleUtilities.PrintLine("Performing selected action", ConsoleColor.DarkYellow);
+
+            var progress = new Progress<int>(percent =>
             {
-                actinf.ActionTarget.ForEach(file =>
+                Console.Write("\r" + percent + "%");
+            });
+
+            await Task.Run(() => PerformAction(actinf, progress));
+
+            System.Threading.Timer closetimer = new System.Threading.Timer(Closeapp, null, 2000, 5000);
+
+            return "Success";
+        }
+
+        private static void PerformAction(ActionUtilities.ActionInfo actioninfo, IProgress<int> progress)
+        {
+            if (actioninfo.ActionTargetType == FileType.PDF)
+            {
+                actioninfo.ActionTarget.ForEach(file =>
                 {
-                    if (PdfLibrary.ITextHelper.IsXFA(file.Filepath))
+                    if (new ITextHelper().IsXFA(file.Filepath))
                     {
                         ConsoleUtilities.PrintLine("The file {0} contains forms, printing it to XPS", ConsoleColor.Green, file.Filename);
-                        PdfLibrary.AdobeHelper.PrintPdf(file.Filepath);
+                        AdobeHelper.PrintPdf(file.Filepath);
                     }
                 });
 
-                actinf.ActionTarget.RemoveAll(f => PdfLibrary.ITextHelper.IsXFA(f.Filepath));
+                actioninfo.ActionTarget.RemoveAll(f => new ITextHelper().IsXFA(f.Filepath));
 
-                switch (actinf.ActionType)
+                switch (actioninfo.ActionType)
                 {
                     case ActionType.PDFTOIMAGE:
-                        actinf.ActionTarget.ForEach(file => PdfLibrary.GhostScriptHelper.PdfToImage(file.Filepath));
+                        new PdfActions(new GhostScriptHelper()).Run(actioninfo);
                         break;
-                    case ActionType.SPLIT:
-                        actinf.ActionTarget.ForEach(file => PdfLibrary.ITextHelper.Split(file.Filepath));
+                    case ActionType.LOOKSCANNED:
+                        new PdfActions(new MagickHelper()).Run(actioninfo);
                         break;
+                    case ActionType.SPLIT:                        
                     case ActionType.ROTATECW:
                     case ActionType.ROTATECCW:
                     case ActionType.ROTATE180:
-                        actinf.ActionTarget.ForEach(file => PdfLibrary.ITextHelper.Rotate(file.Filepath, (int)actinf.ActionType));
-                        break;
                     case ActionType.MERGE:
-                        PdfLibrary.ITextHelper.Merge(actinf.ActionTarget.Select(f => f.Filepath).ToList());
+                        new PdfActions(new ITextHelper()).Run(actioninfo);
                         break;
                 }
             }
-            else if (actinf.ActionTargetType == FileType.IMAGE)
+            else if (actioninfo.ActionTargetType == FileType.IMAGE)
             {
-                switch (actinf.ActionType)
+                switch (actioninfo.ActionType)
                 {
                     case ActionType.IMAGETOPDF:
-                        PdfLibrary.ITextHelper.ImageToPdf(actinf.ActionTarget.Select(f => f.Filepath).ToList());
+                        new PdfActions(new ITextHelper()).Run(actioninfo);
                         break;
                     case ActionType.OPTIMIZE:
-                        actinf.ActionTarget.ForEach(file => ImageLibrary.ImageProcessorHelper.Optimize(file.Filepath, actinf.resolution));
-                        break;
                     case ActionType.ROTATECW:
                     case ActionType.ROTATECCW:
                     case ActionType.ROTATE180:
-                        actinf.ActionTarget.ForEach(file => ImageLibrary.ImageProcessorHelper.Rotate(file.Filepath, (float)actinf.ActionType));
+                        new ImageActions(new ImageProcessorHelper()).Run(actioninfo);
                         break;
                 }
             }
-            else if (actinf.ActionTargetType == FileType.XPS)
+            else if (actioninfo.ActionTargetType == FileType.XPS)
             {
-                switch (actinf.ActionType)
+                switch (actioninfo.ActionType)
                 {
                     case ActionType.XPSTOIMAGE:
-                        actinf.ActionTarget.ForEach(file => XpsLibrary.XpsHelper.XpsToImage(file.Filepath));
+                        actioninfo.ActionTarget.ForEach(file => XpsHelper.XpsToImage(file.Filepath));
                         break;
                     case ActionType.XPSTOPDF:
-                        actinf.ActionTarget.ForEach(file => PdfLibrary.ITextHelper.ImageToPdf(XpsLibrary.XpsHelper.XpsToImage(file.Filepath)));
+                        actioninfo.ActionTarget.ForEach(file => new ITextHelper().ImageToPdf(XpsHelper.XpsToImage(file.Filepath, true), file.Filepath));
                         break;
                 }
             }
-            else if (actinf.ActionTargetType == FileType.COMBINED)
+            else if (actioninfo.ActionTargetType == FileType.COMBINED)
             {
-                switch (actinf.ActionType)
+                switch (actioninfo.ActionType)
                 {
                     case ActionType.COMBINE:
-                        PdfLibrary.ITextHelper.Combine(actinf.ActionTarget.Select(f => f.Filepath).ToList());
+                        new PdfActions(new ITextHelper()).Run(actioninfo);
                         break;
                 }
             }

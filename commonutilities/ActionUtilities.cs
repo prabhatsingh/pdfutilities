@@ -1,9 +1,9 @@
-﻿using CommonUtilities.Models;
+﻿using Libraries.CommonUtilities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CommonUtilities
+namespace Libraries.CommonUtilities
 {
     public class ActionUtilities
     {
@@ -22,11 +22,10 @@ namespace CommonUtilities
             {
                 get
                 {
-                    if (ActionTarget.All(f => f.FType == FileType.PDF)) return FileType.PDF;
-                    if (ActionTarget.All(f => f.FType == FileType.XPS)) return FileType.XPS;
-                    if (ActionTarget.All(f => f.FType == FileType.IMAGE)) return FileType.IMAGE;
-                    if (ActionTarget.All(f => f.FType == FileType.IMAGE || f.FType == FileType.PDF)) return FileType.COMBINED;
-                    return FileType.UNSUPPORTED;
+                    if (ActionTarget.Select(f => f.FType).Distinct().Count() == 1)
+                        return ActionTarget.First().FType;
+                    else
+                        return FileType.COMBINED;
                 }
             }
 
@@ -42,6 +41,7 @@ namespace CommonUtilities
                         options.Add(ActionType.PDFTOIMAGE, "Convert pdf page(s) to image(s)");
                         options.Add(ActionType.SPLIT, "Split pdf file(s)");
                         options.Add(ActionType.ROTATE, "Rotate pdf file(s)");
+                        options.Add(ActionType.LOOKSCANNED, "Make pdf file(s) look scanned");
                         if (ActionTarget.Count > 1) options.Add(ActionType.MERGE, "Merge pdf files");
                         break;
                     case FileType.IMAGE:
@@ -96,7 +96,6 @@ namespace CommonUtilities
                 var userinput = Console.ReadLine();
 
                 var enteredValue = Convert.ToInt32(string.IsNullOrEmpty(userinput) ? "0" : userinput);
-                ConsoleUtilities.PrintLine("Processing", ConsoleColor.DarkYellow);
 
                 if (options.Count != 0)
                     return options.ElementAt(enteredValue - 1).Key;

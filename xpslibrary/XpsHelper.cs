@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Libraries.CommonUtilities;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,11 +12,6 @@ namespace XpsLibrary
         {
             var imagefiles = new List<string>();
 
-            var currentdirectory = Path.GetDirectoryName(inputfile);
-            var filename = Path.GetFileNameWithoutExtension(inputfile);
-
-            var outputpath = currentdirectory + Path.DirectorySeparatorChar;
-                        
             using (var xpsConverter = new Xps2Image(inputfile))
             {
                 var images = xpsConverter.ToBitmap(new Parameters
@@ -25,28 +22,25 @@ namespace XpsLibrary
 
                 if (images.Count() > 1)
                 {
-                    outputpath = currentdirectory + Path.DirectorySeparatorChar + filename + Path.DirectorySeparatorChar;
-
-                    if (!Directory.Exists(outputpath))
-                        Directory.CreateDirectory(outputpath);
+                    var outputpath = FileUtilities.GetOutputPath(inputfile, Libraries.CommonUtilities.Models.ActionType.XPSTOIMAGE, isTemp: istemp, formatChange: true, newExtension: ".png", outputNameFormat: "{0}_Image_{1}", hasMultipleOutput: true);
 
                     int count = 1;
                     images.ToList().ForEach(f =>
                     {
-                        var imgfilename = outputpath + string.Format("{0}_Page_{1}.png", Path.GetFileNameWithoutExtension(inputfile), count++);
+                        var imgfilename = string.Format(outputpath, Path.GetFileNameWithoutExtension(inputfile), count++);
                         imagefiles.Add(imgfilename);
                         f.Save(imgfilename);
                     });
                 }
                 else
                 {
-                    outputpath = currentdirectory + Path.DirectorySeparatorChar + filename + ".png";
+                    var outputpath = FileUtilities.GetOutputPath(inputfile, Libraries.CommonUtilities.Models.ActionType.XPSTOIMAGE, isTemp: istemp, formatChange: true, newExtension: ".png");
                     imagefiles.Add(outputpath);
                     images.First().Save(outputpath);
                 }
             }
 
             return imagefiles;
-        }        
+        }
     }
 }

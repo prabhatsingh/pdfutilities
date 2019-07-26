@@ -178,14 +178,14 @@ namespace XpsLibrary
 
             var size = parameters.RequiredSize ?? new Size();
 
-            Func<int, bool> isSizeDefined = requiredSize => requiredSize > 0;
-            Action<int, double> calcDpi = (requiredSize, pageSize) =>
+            bool isSizeDefined(int requiredSize) => requiredSize > 0;
+            void calcDpi(int requiredSize, double pageSize)
             {
                 if (isSizeDefined(requiredSize))
                 {
                     dpi = (requiredSize / pageSize) * dpiConst;
                 }
-            };
+            }
 
             try
             {
@@ -256,9 +256,17 @@ namespace XpsLibrary
 
         public void Dispose()
         {
-            _xpsDocumentInMemoryStream.Dispose();
-            _xpsDocumentInMemoryStream = null;
+            Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _xpsDocumentInMemoryStream.Dispose();
+                _xpsDocumentInMemoryStream = null;
+            }
         }
     }
 }

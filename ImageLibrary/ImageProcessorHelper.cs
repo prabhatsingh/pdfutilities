@@ -1,23 +1,27 @@
 ﻿using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
-using System;
+using Libraries.CommonUtilities;
+using Libraries.CommonUtilities.Models;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageLibrary
 {
-    public class ImageProcessorHelper
+    public class ImageProcessorHelper : Libraries.CommonUtilities.Interfaces.IImageActions
     {
-        public static void Optimize(string inputfile, int finalsize = 1024)
+        public void ConvertToScanned(string filename)
         {
-            var currentdirectory = Path.GetDirectoryName(inputfile);
-            var filename = Path.GetFileNameWithoutExtension(inputfile);
+            throw new System.NotImplementedException();
+        }
 
-            var outputpath = currentdirectory + Path.DirectorySeparatorChar + filename + "_Resized" + Path.GetExtension(inputfile);
+        public void ImageToPdf(List<string> inputfiles, string outputlocation = "")
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Optimize(string inputfile, int finalsize = 1024)
+        {
+            var outputpath = inputfile.GetOutputPath(ActionType.OPTIMIZE);
 
             ISupportedImageFormat format = new JpegFormat();
             Size size = new Size(finalsize, 0);
@@ -31,13 +35,10 @@ namespace ImageLibrary
             }
         }
 
-        public static void Rotate(string inputfile, float rotation)
+        public void Rotate(string inputfile, float rotation)
         {
-            var currentdirectory = Path.GetDirectoryName(inputfile);
-            var filename = Path.GetFileNameWithoutExtension(inputfile);
+            var outputpath = inputfile.GetOutputPath(ActionType.ROTATE, additionalData: rotation.ToString());
 
-            var outputpath = currentdirectory + Path.DirectorySeparatorChar + filename + "_Rotated" + Path.GetExtension(inputfile);
-            
             using (ImageFactory imageFactory = new ImageFactory(preserveExifData: true))
             {
                 imageFactory.Load(inputfile)

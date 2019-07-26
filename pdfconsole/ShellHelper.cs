@@ -11,7 +11,6 @@ namespace PdfConsole
             string sendto = Environment.GetFolderPath(Environment.SpecialFolder.SendTo);
             string shortcutpath = sendto + Path.DirectorySeparatorChar + "PDFUtilities.lnk";
 
-            object shDesktop = "Desktop";
             WshShell shell = new WshShell();
 
             if (System.IO.File.Exists(shortcutpath))
