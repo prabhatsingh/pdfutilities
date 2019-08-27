@@ -30,6 +30,7 @@ namespace Libraries.CommonUtilities
             }
 
             public List<FileUtilities.FileDetails> ActionTarget { get; set; }
+            public bool IsTempOutput { get; internal set; }
 
             public void AskUser()
             {

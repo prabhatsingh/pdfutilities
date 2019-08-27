@@ -45,6 +45,7 @@
     <Compile Include="ConsoleUtilities.cs" />
     <Compile Include="FileUtilities.cs" />
     <Compile Include="Interfaces\IImageActions.cs" />
+    <Compile Include="Models\ConsoleProp.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Interfaces\IPdfActions.cs" />
     <Compile Include="Models\ImageActions.cs" />

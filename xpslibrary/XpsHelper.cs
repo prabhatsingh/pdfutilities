@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace XpsLibrary
 {
-    public class XpsHelper
+    public class XpsHelper : Libraries.CommonUtilities.Interfaces.IPdfActions
     {
-        public static List<string> XpsToImage(string inputfile, bool istemp = false)
+        public List<string> XpsToImage(string inputfile, bool istemp = false)
         {
             var imagefiles = new List<string>();
 
@@ -41,6 +41,56 @@ namespace XpsLibrary
             }
 
             return imagefiles;
+        }
+
+        public void Combine(List<string> inputfiles)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ConvertToScanned(string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetPageCount(string inputfile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ImageToPdf(List<string> inputfiles, string outputlocation = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsXFA(string inputfile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Merge(List<string> inputfiles)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PdfToImage(string inputfile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PrintPdf(string inputfile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Rotate(string inputfile, float rotation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Split(string inputfile)
+        {
+            throw new NotImplementedException();
         }
     }
 }

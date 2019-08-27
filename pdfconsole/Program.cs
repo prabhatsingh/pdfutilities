@@ -39,7 +39,7 @@ namespace PdfConsole
         {
             ConsoleUtilities.PrintLine("Performing selected action", ConsoleColor.DarkYellow);
 
-            var progress = new Progress<int>(percent =>
+            var progress = new Progress<CommonUtilities.Models.ConsoleProp>(percent =>
             {
                 Console.Write("\r" + percent + "%");
             });
@@ -51,7 +51,7 @@ namespace PdfConsole
             return "Success";
         }
 
-        private static void PerformAction(ActionUtilities.ActionInfo actioninfo, IProgress<int> progress)
+        private static void PerformAction(ActionUtilities.ActionInfo actioninfo, IProgress<CommonUtilities.Models.ConsoleProp> progress)
         {
             if (actioninfo.ActionTargetType == FileType.PDF)
             {
@@ -59,6 +59,7 @@ namespace PdfConsole
                 {
                     if (new ITextHelper().IsXFA(file.Filepath))
                     {
+                        //progress.Report(new CommonUtilities.Models.ConsoleProp { concolor = ConsoleColor.Green, message = "The file {0} contains forms, printing it to XPS", p = new string[] { file.Filename } });
                         ConsoleUtilities.PrintLine("The file {0} contains forms, printing it to XPS", ConsoleColor.Green, file.Filename);
                         AdobeHelper.PrintPdf(file.Filepath);
                     }
@@ -103,10 +104,10 @@ namespace PdfConsole
                 switch (actioninfo.ActionType)
                 {
                     case ActionType.XPSTOIMAGE:
-                        actioninfo.ActionTarget.ForEach(file => XpsHelper.XpsToImage(file.Filepath));
+                        actioninfo.ActionTarget.ForEach(file => new XpsHelper().XpsToImage(file.Filepath));
                         break;
                     case ActionType.XPSTOPDF:
-                        actioninfo.ActionTarget.ForEach(file => new ITextHelper().ImageToPdf(XpsHelper.XpsToImage(file.Filepath, true), file.Filepath));
+                        actioninfo.ActionTarget.ForEach(file => new ITextHelper().ImageToPdf(new XpsHelper().XpsToImage(file.Filepath, true), file.Filepath));
                         break;
                 }
             }

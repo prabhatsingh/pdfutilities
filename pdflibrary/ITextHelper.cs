@@ -26,13 +26,13 @@ namespace PdfLibrary
                 PdfDictionary pageDict = reader.GetPageN(n);
 
                 PdfNumber rotation = pageDict.GetAsNumber(PdfName.ROTATE);
-
+                float rotationrequired = desiredRot;
                 if (rotation != null)
                 {
-                    desiredRot += rotation.IntValue;
-                    desiredRot %= 360; // must be 0, 90, 180, or 270
+                    rotationrequired += rotation.IntValue;
+                    rotationrequired %= 360; // must be 0, 90, 180, or 270
                 }
-                pageDict.Put(PdfName.ROTATE, new PdfNumber(desiredRot));
+                pageDict.Put(PdfName.ROTATE, new PdfNumber(rotationrequired));
             }
 
             stamper.Close();
@@ -96,6 +96,7 @@ namespace PdfLibrary
 
         public void Merge(List<string> inputfiles)
         {
+            inputfiles.Sort();
             var outputpath = FileUtilities.GetOutputPath(inputfiles.First(), Libraries.CommonUtilities.Models.ActionType.MERGE);
 
             Document doc = null;
