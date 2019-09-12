@@ -4,6 +4,7 @@ using Libraries.CommonUtilities;
 using Libraries.CommonUtilities.Models;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace ImageLibrary
 {
@@ -35,15 +36,31 @@ namespace ImageLibrary
             }
         }
 
-        public void Rotate(string inputfile, float rotation)
+        public Image Rotate(string inputfile, float rotation, bool retobj = false)
         {
             var outputpath = inputfile.GetOutputPath(ActionType.ROTATE, additionalData: rotation.ToString());
 
-            using (ImageFactory imageFactory = new ImageFactory(preserveExifData: true))
+            using (ImageFactory imageFactory = new ImageFactory(preserveExifData: true).Resolution((int)Image.FromFile(inputfile).HorizontalResolution, (int)Image.FromFile(inputfile).VerticalResolution))
             {
-                imageFactory.Load(inputfile)
-                            .Rotate(rotation)
-                            .Save(outputpath);
+                if (retobj)
+                {
+                    using (Image sourceImg = imageFactory.Load(inputfile).RotateBounded(rotation, true).Image)
+                    {
+                        var clonedImg = new Bitmap(sourceImg.Width, sourceImg.Height, PixelFormat.Format32bppArgb);
+                        clonedImg.SetResolution(Image.FromFile(inputfile).HorizontalResolution, Image.FromFile(inputfile).VerticalResolution);
+
+                        using (var copy = Graphics.FromImage(clonedImg))
+                        {
+                            copy.DrawImage(sourceImg, 0, 0);
+                        }
+
+                        return clonedImg;
+                    }
+                }
+                else
+                    imageFactory.Load(inputfile).Rotate(rotation).Save(outputpath);
+
+                return imageFactory.Load(inputfile).Image;
             }
         }
     }

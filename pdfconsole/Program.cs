@@ -75,7 +75,7 @@ namespace PdfConsole
                     case ActionType.LOOKSCANNED:
                         new PdfActions(new MagickHelper()).Run(actioninfo);
                         break;
-                    case ActionType.SPLIT:                        
+                    case ActionType.SPLIT:
                     case ActionType.ROTATECW:
                     case ActionType.ROTATECCW:
                     case ActionType.ROTATE180:
@@ -96,6 +96,10 @@ namespace PdfConsole
                     case ActionType.ROTATECCW:
                     case ActionType.ROTATE180:
                         new ImageActions(new ImageProcessorHelper()).Run(actioninfo);
+                        break;
+                    case ActionType.ROTATEOTH:
+                        System.Windows.Forms.Form form = new RotationForm(actioninfo);
+                        form.ShowDialog();
                         break;
                 }
             }

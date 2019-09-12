@@ -24,7 +24,7 @@ namespace Libraries.CommonUtilities.Models
                     actinf.ActionTarget.ForEach(f => _pdfActions.PdfToImage(f.Filepath));
                     break;
                 case ActionType.MERGE:
-                    _pdfActions.Merge(actinf.ActionTarget.Select(f=>f.Filepath).ToList());
+                    _pdfActions.Merge(actinf.ActionTarget.Select(f => f.Filepath).ToList());
                     break;
                 case ActionType.IMAGETOPDF:
                     _pdfActions.ImageToPdf(actinf.ActionTarget.Select(f => f.Filepath).ToList());

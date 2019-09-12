@@ -4,6 +4,6 @@
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>H:\Documents\Personal\MyDocs\LeaseAgreement.pdf</StartArguments>
+    <StartArguments>C:\Users\pnppps\Downloads\423192_LAB_ATKNT039_04092018\423192_LAB_ATKNT039_04092018_Page_3.jpeg</StartArguments>
   </PropertyGroup>
 </Project>

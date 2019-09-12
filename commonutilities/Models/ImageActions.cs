@@ -14,7 +14,7 @@ namespace Libraries.CommonUtilities.Models
             _imageActions = imageActions;
         }
 
-        public void Run(ActionUtilities.ActionInfo actinf)
+        public object Run(ActionUtilities.ActionInfo actinf)
         {
             switch (actinf.ActionType)
             {
@@ -27,8 +27,15 @@ namespace Libraries.CommonUtilities.Models
                 case ActionType.ROTATE180:
                     actinf.ActionTarget.ForEach(f => _imageActions.Rotate(f.Filepath, (float)actinf.ActionType));
                     break;
-
+                case ActionType.ROTATEOTH:
+                    if (actinf.retobj)
+                        return _imageActions.Rotate(actinf.ActionTarget.First().Filepath, actinf.rotation, actinf.retobj);
+                    else
+                        actinf.ActionTarget.ForEach(f => _imageActions.Rotate(f.Filepath, actinf.rotation));
+                    break;
             }
+
+            return null;
         }
     }
 }

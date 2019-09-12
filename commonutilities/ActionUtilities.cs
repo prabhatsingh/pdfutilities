@@ -10,6 +10,8 @@ namespace Libraries.CommonUtilities
         public class ActionInfo
         {
             public int resolution;
+            public float rotation;
+            public bool retobj;
 
             public ActionInfo()
             {
@@ -73,6 +75,7 @@ namespace Libraries.CommonUtilities
                     options.Add(ActionType.ROTATECW, "Rotate 90° clockwise");
                     options.Add(ActionType.ROTATECCW, "Rotate 90° counter clockwise");
                     options.Add(ActionType.ROTATE180, "Rotate 180°");
+                    options.Add(ActionType.ROTATEOTH, "Rotate Custom");
 
                     ActionType = ParseUserInput(options);
 
