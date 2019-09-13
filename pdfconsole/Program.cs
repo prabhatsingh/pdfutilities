@@ -130,6 +130,7 @@ namespace PdfConsole
         {
             var actionInfo = new ActionUtilities.ActionInfo();
             args.ToList().ForEach(f => actionInfo.ActionTarget.Add(new FileUtilities.FileDetails(f)));
+            actionInfo.ActionTarget = actionInfo.ActionTarget.OrderBy(f => f.Filename).ToList();
             actionInfo.AskUser();
             return actionInfo;
         }

@@ -59,6 +59,18 @@ namespace Libraries.CommonUtilities
             }
         }
 
+        /// <summary>
+        /// Generates the output path based on provided parameters
+        /// </summary>
+        /// <param name="inputfile"></param>
+        /// <param name="acttype"></param>
+        /// <param name="isTemp">If true, generates the output path to system temporary directory</param>
+        /// <param name="formatChange"></param>
+        /// <param name="newExtension">The new extension with preceding '.'</param>
+        /// <param name="additionalData">Any text to be added at the end of the filename</param>
+        /// <param name="outputNameFormat"></param>
+        /// <param name="hasMultipleOutput"></param>
+        /// <returns></returns>
         public static string GetOutputPath(this string inputfile, ActionType acttype, bool isTemp = false, bool formatChange = false, string newExtension = "", string additionalData = "", string outputNameFormat = "", bool hasMultipleOutput = false)
         {
             var currentdirectory = isTemp ? Path.GetTempPath() : Path.GetDirectoryName(inputfile);

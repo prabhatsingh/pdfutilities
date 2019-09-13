@@ -1,54 +1,101 @@
-﻿using ImageLibrary;
+﻿using Libraries.CommonUtilities;
 using Libraries.CommonUtilities.Models;
 using System;
-using System.Linq;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Windows.Forms;
-using Libraries.CommonUtilities;
 using System.Drawing.Drawing2D;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace PdfConsole
 {
     public partial class RotationForm : Form
     {
-        string imagepath = string.Empty;
         ActionUtilities.ActionInfo actinf;
         float precision = 0.01f;
 
-        // The original image.
-        private Bitmap OriginalBitmap;
-
-        // The rotated image.
-        private Bitmap RotatedBitmap;
+        private Image optimizdImage;
+        private Image originalImage;
 
         public RotationForm(ActionUtilities.ActionInfo actioninfo)
         {
             InitializeComponent();
             actinf = actioninfo;
-            lbl_Rotval.Text = (trackBar1.Value * precision).ToString();
-            pb_Image.Image = Image.FromFile(actinf.ActionTarget.First().Filepath);
+
+            LoadFiles();
+
+            lbl_Rotval.Text = SelectedAngle.ToString();
         }
 
-        private void bt_Rotate_Click(object sender, EventArgs e)
+        async private void LoadFiles()
         {
-            OriginalBitmap = new Bitmap(actinf.ActionTarget.First().Filepath);
-            pb_Image.Image = OriginalBitmap;
-            pb_Image.Visible = true;
+            filelist.DataSource = actinf.ActionTarget;
+            filelist.DisplayMember = "Filename";
+            filelist.ValueMember = "Filepath";
 
-            float angle = trackBar1.Value * precision;
-
-            // Rotate.
-            RotatedBitmap = RotateBitmap(OriginalBitmap, angle);
-
-            // Display the result.
-            pb_Image.Image = RotatedBitmap;
-
-            // Size the form to fit.
-            SizeForm();
+            lbl_Status.Text = "Please wait";
+            await Task.Factory.StartNew(() => LoadImages(), TaskCreationOptions.LongRunning);
+            lbl_Status.Text = "";
         }
 
-        private Bitmap RotateBitmap(Bitmap bm, float angle)
+        async private void filelist_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            lbl_Status.Text = "Please wait";
+            await Task.Factory.StartNew(() => LoadImages(), TaskCreationOptions.LongRunning);
+            lbl_Status.Text = "";
+        }
+
+        private void LoadImages()
+        {
+            string imagefile = "";
+            if (filelist.InvokeRequired)
+            {
+                filelist.Invoke(new MethodInvoker(delegate { imagefile = filelist.SelectedValue.ToString(); }));
+            }
+
+            optimizdImage = new ImageLibrary.ImageProcessorHelper().Optimize(imagefile, retobj: true);
+            originalImage = new ImageLibrary.ImageProcessorHelper().Optimize(imagefile, finalsize: Image.FromFile(imagefile).Width, retobj: true);
+
+            pb_Image.Image = optimizdImage;
+            pb_Image.SizeMode = PictureBoxSizeMode.Zoom;
+        }
+
+        private float SelectedAngle { get { return angleSelector.Value * precision; } }
+
+        private void AngleSelector_Scroll(object sender, EventArgs e)
+        {
+            lbl_Rotval.Text = (angleSelector.Value * precision).ToString();
+        }
+
+        private void SizeForm()
+        {
+            int wid = pb_Image.Right + pb_Image.Left;
+            int hgt = pb_Image.Bottom + pb_Image.Left;
+
+            this.ClientSize = new Size(Math.Max(wid, this.ClientSize.Width), Math.Max(hgt, this.ClientSize.Height));
+        }
+
+        private void bt_Save_Click(object sender, EventArgs e)
+        {
+            var bm = new Bitmap(originalImage);
+            var outputpath = filelist.SelectedValue.ToString().GetOutputPath(ActionType.ROTATE, additionalData: Math.Abs(SelectedAngle).ToString(), formatChange: true, newExtension: ".png");
+
+            bm.SetResolution(originalImage.HorizontalResolution, originalImage.VerticalResolution);
+            RotateBitmap(bm, SelectedAngle, SystemColors.ControlLight).Save(outputpath, System.Drawing.Imaging.ImageFormat.Png);
+        }
+
+        private void pb_Image_Paint(object sender, PaintEventArgs e)
+        {
+            var gr = e.Graphics;
+
+            var numcell = 10;
+
+            for (int i = 0; i < pb_Image.Height; i = i + pb_Image.Height / numcell)
+            {
+                gr.DrawLine(new Pen(Color.LightGray, 1), new Point(0, i), new Point(pb_Image.Width, i));
+            }
+        }
+
+        private Bitmap RotateBitmap(Bitmap bm, float angle, Color backcolor)
         {
             // Make a Matrix to represent rotation by this angle.
             Matrix rotate_at_origin = new Matrix();
@@ -63,19 +110,21 @@ namespace PdfConsole
                 new PointF(bm.Width, bm.Height),
                 new PointF(0, bm.Height),
             };
+
             rotate_at_origin.TransformPoints(points);
-            float xmin, xmax, ymin, ymax;
-            GetPointBounds(points, out xmin, out xmax, out ymin, out ymax);
+
+            GetPointBounds(points, out float xmin, out float xmax, out float ymin, out float ymax);
 
             // Make a bitmap to hold the rotated result.
             int wid = (int)Math.Round(xmax - xmin);
             int hgt = (int)Math.Round(ymax - ymin);
+
             Bitmap result = new Bitmap(wid, hgt);
             result.SetResolution(bm.HorizontalResolution, bm.VerticalResolution);
+
             // Create the real rotation transformation.
             Matrix rotate_at_center = new Matrix();
-            rotate_at_center.RotateAt(angle,
-                new PointF(wid / 2f, hgt / 2f));
+            rotate_at_center.RotateAt(angle, new PointF(wid / 2f, hgt / 2f));
 
             // Draw the image onto the new bitmap rotated.
             using (Graphics gr = Graphics.FromImage(result))
@@ -87,7 +136,7 @@ namespace PdfConsole
                 //gr.Clear(bm.GetPixel(0, 0));
 
                 //// For debugging. (Makes it easier to see the background.)
-                gr.Clear(SystemColors.ControlDark);
+                gr.Clear(backcolor);
 
                 // Set up the transformation to rotate.
                 gr.Transform = rotate_at_center;
@@ -117,37 +166,10 @@ namespace PdfConsole
             }
         }
 
-        // Make sure the form is big enough to show the rotated image.
-        private void SizeForm()
+        private void AngleSelector_MouseUp(object sender, MouseEventArgs e)
         {
-            int wid = pb_Image.Right + pb_Image.Left;
-            int hgt = pb_Image.Bottom + pb_Image.Left;
-
-            this.ClientSize = new Size(
-                Math.Max(wid, this.ClientSize.Width),
-                Math.Max(hgt, this.ClientSize.Height));
-        }
-
-        private void trackBar1_Scroll(object sender, EventArgs e)
-        {
-            lbl_Rotval.Text = (trackBar1.Value * precision).ToString();
-        }
-
-        private void bt_Save_Click(object sender, EventArgs e)
-        {
-            RotatedBitmap.Save(actinf.ActionTarget.First().Filepath.GetOutputPath(ActionType.ROTATE, additionalData: actinf.rotation.ToString()));
-        }
-
-        private void pb_Image_Paint(object sender, PaintEventArgs e)
-        {
-            var gr = e.Graphics;
-
-            var numcell = 10;
-
-            for (int i = 0; i < pb_Image.Height; i = i + pb_Image.Height / numcell)
-            {
-                gr.DrawLine(new Pen(Color.LightGray, 1), new Point(0, i), new Point(pb_Image.Width, i));
-            }
+            pb_Image.Image = RotateBitmap(new Bitmap(optimizdImage), SelectedAngle, SystemColors.ControlLight);
+            SizeForm();
         }
     }
 }

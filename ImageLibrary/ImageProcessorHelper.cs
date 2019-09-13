@@ -20,7 +20,7 @@ namespace ImageLibrary
             throw new System.NotImplementedException();
         }
 
-        public void Optimize(string inputfile, int finalsize = 1024)
+        public Image Optimize(string inputfile, int finalsize = 1024, bool retobj = false, float hdpi = 0, float vdpi = 0)
         {
             var outputpath = inputfile.GetOutputPath(ActionType.OPTIMIZE);
 
@@ -29,10 +29,26 @@ namespace ImageLibrary
 
             using (ImageFactory imageFactory = new ImageFactory(preserveExifData: true))
             {
-                imageFactory.Load(inputfile)
-                            .Resize(size)
-                            .Format(format)
-                            .Save(outputpath);
+                if (retobj)
+                {
+                    using (Image sourceImg = imageFactory.Load(inputfile).Resize(size).Format(format).Image)
+                    {
+                        var clonedImg = new Bitmap(sourceImg.Width, sourceImg.Height, PixelFormat.Format32bppArgb);
+
+                        clonedImg.SetResolution(hdpi == 0 ? Image.FromFile(inputfile).HorizontalResolution : hdpi, vdpi == 0 ? Image.FromFile(inputfile).VerticalResolution : vdpi);
+
+                        using (var copy = Graphics.FromImage(clonedImg))
+                        {
+                            copy.DrawImage(sourceImg, 0, 0);
+                        }
+
+                        return clonedImg;
+                    }
+                }
+                else
+                    imageFactory.Load(inputfile).Resize(size).Format(format).Save(outputpath);
+
+                return imageFactory.Load(inputfile).Image;
             }
         }
 

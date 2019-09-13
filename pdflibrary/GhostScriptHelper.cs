@@ -105,7 +105,7 @@ namespace PdfLibrary
                 if (File.Exists(outputfilename))
                     File.Delete(outputfilename);
 
-                img.OutputPath = outputfilename;
+                img.OutputPath = outputfilename;                
                 img.Process(_lastInstalledVersion, false, null);
 
                 Console.WriteLine("Generated {0}", Path.GetFileName(outputfilename));
