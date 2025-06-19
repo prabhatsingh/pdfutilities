@@ -24,10 +24,8 @@ namespace PdfLibrary
 
             List<string> scannedimgfiles = new List<string>();
 
-            using (MagickImageCollection images = new MagickImageCollection())
+            using (MagickImageCollection images = new MagickImageCollection(filename, settings))
             {
-                images.Read(filename, settings);
-
                 int page = 1;
 
                 foreach (MagickImage image in images)
@@ -74,6 +72,39 @@ namespace PdfLibrary
         }
 
         public void PdfToImage(string inputfile)
+        {
+            int pagecount = new ITextHelper().GetPageCount(inputfile);
+
+            var outputpath = FileUtilities.GetOutputPath(inputfile, Libraries.CommonUtilities.Models.ActionType.PDFTOIMAGE, formatChange: true, newExtension: ".jpeg", hasMultipleOutput: pagecount > 1, outputNameFormat: "{0}_page_{1}");
+
+            //// Settings the density to 300 dpi will create an image with a better quality
+            //var settings = new MagickReadSettings
+            //{
+                
+            //};
+
+            MagickNET.SetGhostscriptDirectory(Path.GetDirectoryName(GhostScriptHelper.GetGhostscriptVersion().DllPath));
+
+            using (var images = new MagickImageCollection())
+            {
+                // Add all the pages of the pdf file to the collection
+                images.Read(inputfile);
+
+                var page = 1;
+                foreach (var image in images)
+                {
+                    // Writing to a specific format works the same as for a single image
+                    image.Format = MagickFormat.Jpeg;
+
+                    var outputfilename = string.Format(outputpath, Path.GetFileNameWithoutExtension(inputfile), page);
+
+                    image.Write(outputfilename);
+                    page++;
+                }
+            }
+        }
+
+        public void PdfToImage1(string inputfile)
         {
             int pagecount = new ITextHelper().GetPageCount(inputfile);
 

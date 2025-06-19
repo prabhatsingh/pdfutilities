@@ -82,7 +82,7 @@ namespace Libraries.CommonUtilities
                     ConsoleUtilities.PrintLine($"Selected Rotation Option Is: {(int)ActionType}", ConsoleColor.DarkGray);
                 }
 
-                if (ActionType == ActionType.OPTIMIZE)
+                if (ActionType == ActionType.OPTIMIZE || ActionType == ActionType.PDFTOIMAGE || ActionType == ActionType.LOOKSCANNED)
                 {
                     ConsoleUtilities.Print("Select final resolution: ", ConsoleColor.Yellow);
                     options.Clear();
